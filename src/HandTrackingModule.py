@@ -1,4 +1,3 @@
-
 import math
 
 import cv2
@@ -13,8 +12,14 @@ class HandDetector:
     provides bounding box info of the hand found.
     """
 
-    def __init__(self, staticMode=False, maxHands=2, modelComplexity=1, detectionCon=0.5, minTrackCon=0.5):
-
+    def __init__(
+        self,
+        staticMode=False,
+        maxHands=2,
+        modelComplexity=1,
+        detectionCon=0.5,
+        minTrackCon=0.5,
+    ):
         """
         :param mode: In static mode, detection is done on each image: slower
         :param maxHands: Maximum number of hands to detect
@@ -28,11 +33,13 @@ class HandDetector:
         self.detectionCon = detectionCon
         self.minTrackCon = minTrackCon
         self.mpHands = mp.solutions.hands
-        self.hands = self.mpHands.Hands(static_image_mode=self.staticMode,
-                                        max_num_hands=self.maxHands,
-                                        model_complexity=modelComplexity,
-                                        min_detection_confidence=self.detectionCon,
-                                        min_tracking_confidence=self.minTrackCon)
+        self.hands = self.mpHands.Hands(
+            static_image_mode=self.staticMode,
+            max_num_hands=self.maxHands,
+            model_complexity=modelComplexity,
+            min_detection_confidence=self.detectionCon,
+            min_tracking_confidence=self.minTrackCon,
+        )
 
         self.mpDraw = mp.solutions.drawing_utils
         self.tipIds = [4, 8, 12, 16, 20]
@@ -51,7 +58,9 @@ class HandDetector:
         allHands = []
         h, w, c = img.shape
         if self.results.multi_hand_landmarks:
-            for handType, handLms in zip(self.results.multi_handedness, self.results.multi_hand_landmarks):
+            for handType, handLms in zip(
+                self.results.multi_handedness, self.results.multi_hand_landmarks
+            ):
                 myHand = {}
                 ## lmList
                 mylmList = []
@@ -68,8 +77,7 @@ class HandDetector:
                 ymin, ymax = min(yList), max(yList)
                 boxW, boxH = xmax - xmin, ymax - ymin
                 bbox = xmin, ymin, boxW, boxH
-                cx, cy = bbox[0] + (bbox[2] // 2), \
-                         bbox[1] + (bbox[3] // 2)
+                cx, cy = bbox[0] + (bbox[2] // 2), bbox[1] + (bbox[3] // 2)
 
                 myHand["lmList"] = mylmList
                 myHand["bbox"] = bbox
@@ -86,22 +94,34 @@ class HandDetector:
 
                 ## draw
                 if draw:
-                    self.mpDraw.draw_landmarks(img, handLms,
-                                               self.mpHands.HAND_CONNECTIONS)
-                    cv2.rectangle(img, (bbox[0] - 20, bbox[1] - 20),
-                                  (bbox[0] + bbox[2] + 20, bbox[1] + bbox[3] + 20),
-                                  (255, 0, 255), 2)
-                    cv2.putText(img, myHand["type"], (bbox[0] - 30, bbox[1] - 30), cv2.FONT_HERSHEY_PLAIN,
-                                2, (255, 0, 255), 2)
+                    self.mpDraw.draw_landmarks(
+                        img, handLms, self.mpHands.HAND_CONNECTIONS
+                    )
+                    cv2.rectangle(
+                        img,
+                        (bbox[0] - 20, bbox[1] - 20),
+                        (bbox[0] + bbox[2] + 20, bbox[1] + bbox[3] + 20),
+                        (255, 0, 255),
+                        2,
+                    )
+                    cv2.putText(
+                        img,
+                        myHand["type"],
+                        (bbox[0] - 30, bbox[1] - 30),
+                        cv2.FONT_HERSHEY_PLAIN,
+                        2,
+                        (255, 0, 255),
+                        2,
+                    )
 
         return allHands, img
-    
+
     def fist(self, myHand):
         myLmList = myHand["lmList"]
         if self.results.multi_hand_landmarks:
-                if myLmList[12][1] > myLmList[9][1]:
-                    return True
-                
+            if myLmList[12][1] > myLmList[9][1]:
+                return True
+
     def fingersUp(self, myHand):
         """
         Finds how many fingers are open and returns in a list.
@@ -111,7 +131,7 @@ class HandDetector:
         fingers = []
         myHandType = myHand["type"]
         myLmList = myHand["lmList"]
-            
+
         if self.results.multi_hand_landmarks:
             # Thumb
             if myHandType == "Right":
@@ -131,8 +151,7 @@ class HandDetector:
                     fingers.append(1)
                 else:
                     fingers.append(0)
-            
-                    
+
         return fingers
 
     def findDistance(self, p1, p2, img=None, color=(255, 0, 255), scale=5):
@@ -166,7 +185,13 @@ def main():
     cap = cv2.VideoCapture(0)
 
     # Initialize the HandDetector class with the given parameters
-    detector = HandDetector(staticMode=False, maxHands=2, modelComplexity=1, detectionCon=0.5, minTrackCon=0.5)
+    detector = HandDetector(
+        staticMode=False,
+        maxHands=2,
+        modelComplexity=1,
+        detectionCon=0.5,
+        minTrackCon=0.5,
+    )
 
     # Continuously get frames from the webcam
     while True:
@@ -184,8 +209,10 @@ def main():
             # Information for the first hand detected
             hand1 = hands[0]  # Get the first hand detected
             lmList1 = hand1["lmList"]  # List of 21 landmarks for the first hand
-            bbox1 = hand1["bbox"]  # Bounding box around the first hand (x,y,w,h coordinates)
-            center1 = hand1['center']  # Center coordinates of the first hand
+            bbox1 = hand1[
+                "bbox"
+            ]  # Bounding box around the first hand (x,y,w,h coordinates)
+            center1 = hand1["center"]  # Center coordinates of the first hand
             handType1 = hand1["type"]  # Type of the first hand ("Left" or "Right")
 
             # Count the number of fingers up for the first hand
@@ -193,8 +220,9 @@ def main():
             # print(f'H1 = {fingers1.count(1)}', end=" ")  # Print the count of fingers that are up
 
             # Calculate distance between specific landmarks on the first hand and draw it on the image
-            length, info, img = detector.findDistance(lmList1[8][0:2], lmList1[12][0:2], img, color=(255, 0, 255),
-                                                      scale=10)
+            length, info, img = detector.findDistance(
+                lmList1[8][0:2], lmList1[12][0:2], img, color=(255, 0, 255), scale=10
+            )
 
             # Check if a second hand is detected
             if len(hands) == 2:
@@ -202,7 +230,7 @@ def main():
                 hand2 = hands[1]
                 lmList2 = hand2["lmList"]
                 bbox2 = hand2["bbox"]
-                center2 = hand2['center']
+                center2 = hand2["center"]
                 handType2 = hand2["type"]
 
                 # Count the number of fingers up for the second hand
@@ -210,18 +238,22 @@ def main():
                 # print(f'H2 = {fingers2.count(1)}', end=" ")
 
                 # Calculate distance between the index fingers of both hands and draw it on the image
-                length, info, img = detector.findDistance(lmList1[8][0:2], lmList2[8][0:2], img, color=(255, 0, 0),
-                                                          scale=10)
-    
-                length, info, img = detector.findDistance(lmList1[4][0:2], lmList2[4][0:2], img, color=(255, 0, 0),
-                                                          scale=10)
-                length, info, img = detector.findDistance(lmList1[12][0:2], lmList2[12][0:2], img, color=(255, 0, 0),
-                                                          scale=10)
-                length, info, img = detector.findDistance(lmList1[16][0:2], lmList2[16][0:2], img, color=(255, 0, 0),
-                                                          scale=10)
-                length, info, img = detector.findDistance(lmList1[20][0:2], lmList2[20][0:2], img, color=(255, 0, 0),
-                                                          scale=10)
-  
+                length, info, img = detector.findDistance(
+                    lmList1[8][0:2], lmList2[8][0:2], img, color=(255, 0, 0), scale=10
+                )
+
+                length, info, img = detector.findDistance(
+                    lmList1[4][0:2], lmList2[4][0:2], img, color=(255, 0, 0), scale=10
+                )
+                length, info, img = detector.findDistance(
+                    lmList1[12][0:2], lmList2[12][0:2], img, color=(255, 0, 0), scale=10
+                )
+                length, info, img = detector.findDistance(
+                    lmList1[16][0:2], lmList2[16][0:2], img, color=(255, 0, 0), scale=10
+                )
+                length, info, img = detector.findDistance(
+                    lmList1[20][0:2], lmList2[20][0:2], img, color=(255, 0, 0), scale=10
+                )
 
             # print(" ")  # New line for better readability of the printed output
 

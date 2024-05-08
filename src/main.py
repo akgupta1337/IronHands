@@ -2,11 +2,12 @@ import cv2
 import mediapipe as mp
 import numpy as np
 from HandTrackingModule import HandDetector
+
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_hands = mp.solutions.hands
 
-#intialize files
+# intialize files
 with open("scale.txt", "w") as file:
     file.write("")
 
@@ -16,7 +17,7 @@ with open("pan.txt", "w") as file:
 with open("rotate.txt", "w") as file:
     file.write("0")
 
-#constants
+# constants
 scale_factor = 0
 min_length = 18.439088914585774
 max_length = 200.5356303021603
