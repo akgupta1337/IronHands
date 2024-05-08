@@ -13,7 +13,7 @@ for area in bpy.context.screen.areas:
 obj = bpy.context.active_object
 
 # Specify complete file path for this repo
-new_path = "E:\\IronHands"
+new_path = "E:\\IronHands\\src"
 while True:
     
     with open("new_path\\scale.txt", 'r') as file:

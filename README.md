@@ -8,7 +8,7 @@ Iron Hands is an exciting project inspired by the iconic hand gestures from the 
 - **Intuitive Interface**: No need for complex controls or input devices – simply use your hands!
 - **Real-time Feedback**: See immediate visual feedback as you perform gestures, just like in the movies.
 - **Customizable Configurations**: Tailor the project to your preferences with configurable parameters.
-
+~
 ## Video Preview
 [![Iron Hands Demo](https://img.youtube.com/vi/T73HS1iFST4/0.jpg)](https://www.youtube.com/shorts/T73HS1iFST4)
 
